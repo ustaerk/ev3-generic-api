@@ -21,6 +21,7 @@ def list_motors():
 
 def motor_to_dict(motor):
     return dict(address = motor.address,
+                # TODO: find out why this cannot be encoded as JSON
                 # commands = motor.commands,
                 driver_name = motor.driver_name,
                 duty_cycle = motor.duty_cycle,

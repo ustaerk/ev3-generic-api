@@ -13,7 +13,7 @@ conn = rpyc.classic.connect('192.168.0.40')
 ev3 = conn.modules['ev3dev.ev3']
 core = conn.modules['ev3dev.core']
 
-@app.route('/motors')
+@app.route('/motors', methods=['GET'])
 def list_motors():
     attached_motors = list(core.list_motors())
     motors = [motor_to_dict(attached_motor) for attached_motor in attached_motors]

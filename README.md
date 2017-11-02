@@ -2,6 +2,7 @@
 A generic REST API exposing motors and sensors on an ev3dev-enabled brick. Makes use of Flask to serve the API.
 
 # Running
+Requires Flask to be installed. Follow the Flask installation instructions or run e.g. `sudo pip3 install flask`.
 The ev3dev Python language bindings require Python 3 so you cannot simply run `flask run`. Use `python3 -m flask run` instead.
 
 For local debug mode run with `FLASK_DEBUG=1`.
@@ -15,10 +16,10 @@ To make development easier the API currently uses RPyC to connect to the Mindsto
 
 # Resources
 Working:
- * `GET /motors` - list all currently connected motors with their state
+ * `GET /motors` - list all currently connected motors with their states
+ * `PUT /motors/{port}` - modify the state of the motor connected to `{port}` (see below)
 
 To be implemented:
- * `PUT /motors/{port}` - modify the state of the motor connected to `{port}`
  * `GET /sensors` - list all sensors currently connected to the brick
  * `GET /sensors/{port}` - read the current value of the sensor connected to `{port}`
 

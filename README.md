@@ -37,13 +37,13 @@ Similarily for stopping the motor you would `PUT`
 
 ```
 {
-    "state": []
+    "state": "stopped"
 }
 ```
 ## States
 The following states are currently supported
  * `running` - starts the motor using `run-direct`. Runs at 100% if `duty_cycle_sp` is not provided
- * `[]` - stops the motor using the default stop action (`coast`)
+ * `stopped` - stops the motor using the default stop action (`coast`)
 
 In the future, the following additional states could be possible
  * `holding` - stops the motor using the `hold` stop action

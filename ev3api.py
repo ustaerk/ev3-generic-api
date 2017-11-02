@@ -1,4 +1,18 @@
 #!/usr/bin/env python3
+#
+#    Copyright 2017 Ulrich Stärk (uli@apache.org)
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
 
 
 # import ev3dev.ev3 as ev3
@@ -9,10 +23,13 @@ from flask import json
 from flask import jsonify
 from flask import Flask
 from flask import request
+
 app = Flask(__name__)
 conn = rpyc.classic.connect('192.168.0.40')
 ev3 = conn.modules['ev3dev.ev3']
 core = conn.modules['ev3dev.core']
+
+STATE_FIELD = 'state'
 
 @app.route('/motors', methods=['GET'])
 def list_motors():
@@ -28,19 +45,32 @@ def change_motor(port):
 
 def handle_payload(port, payload):
     motor = ev3.Motor(port); assert motor.connected
-    if not payload['state']:
-        motor.reset()
-    elif payload['state'] == 'running':
-        if 'running' not in motor.state:
-            motor.run_direct(duty_cycle_sp = 100)
-        handle_attributes(motor, payload)
-    else:
-        raise InvalidUsage('Unsupported state.')
+    if STATE_FIELD in payload:
+        update_state(motor, payload[STATE_FIELD])
+    handle_attributes(motor, payload)
 
 def handle_attributes(motor, payload):
-    assert motor.connected
     if 'duty_cycle_sp' in payload:
         motor.duty_cycle_sp = payload['duty_cycle_sp']
+
+# Start the motor using run_direct if it is not already running
+def start_motor(motor):
+    if 'running' not in motor.state:
+        motor.run_direct(duty_cycle_sp = 100)
+
+# Stop the motor and reset all attributes to their defaults
+def stop_motor(motor):
+    motor.reset()
+
+# Update the motor's state based on the provided new state
+def update_state(motor, state):
+    return {
+        'running': start_motor,
+        'stopped': stop_motor
+    }.get(state, handle_unsupported_state)(motor)
+
+def handle_unsupported_state():
+    raise InvalidUsage('Unsupported state.')
 
 def motor_to_dict(motor):
     return dict(address = motor.address,

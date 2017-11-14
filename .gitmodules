@@ -1,0 +1,3 @@
+[submodule "tests/fake-sys"]
+	path = tests/fake-sys
+	url = https://github.com/ustaerk/ev3dev-lang-fake-sys

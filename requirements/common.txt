@@ -1,1 +1,2 @@
 Flask==0.12.2
+python-ev3dev==1.0.0
